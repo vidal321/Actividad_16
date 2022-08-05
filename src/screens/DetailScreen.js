@@ -2,6 +2,7 @@ import React,  { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Button, SafeAreaView, TextInput, Switch } from "react-native";
 import db from './../../src/firebase/config';
 import {ref, set, remove} from "firebase/database";
+import { getAuth } from "firebase/auth";
 
 export default function DetailScreen({ route, navigation }) {
 
@@ -45,7 +46,9 @@ export default function DetailScreen({ route, navigation }) {
       <Button onPress={() =>{
         setStatus(!status);
         if(status == true){
-          set(ref(db, 'devices/' + item.id), {
+          const auth = getAuth();
+          const user = auth.currentUser.uid;
+          set(ref(db, 'users/' + user + '/devices/' + item.id), {
                           area: areaText,
                           status: statusText,
                           pin : pinText
@@ -58,7 +61,9 @@ export default function DetailScreen({ route, navigation }) {
           color="#CC0000"
           onPress={() =>{
             if(status == true){
-              remove(ref(db, 'devices/' + item.id), {
+                const auth = getAuth();
+                const user = auth.currentUser.uid;
+              remove(ref(db, 'users/' + user + '/devices/' + item.id), {
                               area: areaText,
                               status: statusText,
                               pin : pinText
@@ -68,13 +73,7 @@ export default function DetailScreen({ route, navigation }) {
             }
           }}
         
-      />
-
-      <Button onPress={() =>{
-        setStatus(false);
-        navigation.navigate('Home');
-      }} title="REGRESAR" />
-      
+      />      
       </View>
     </SafeAreaView>
   );

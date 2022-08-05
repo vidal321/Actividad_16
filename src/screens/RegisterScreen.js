@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import {Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import db from '../firebase/config';
+import {ref, set} from "firebase/database";
 
 export default function RegisterScreen({navigation}) {
     const [fullName, setFullName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
-
 
 
     const onRegisterPress = () => {
@@ -19,14 +20,21 @@ export default function RegisterScreen({navigation}) {
         const auth = getAuth();
         createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            // Signed in
-            const user = userCredential.user;
-            // ...
+            console.log(userCredential.user.uid)
+             const uid = userCredential.user.uid;
+            //set(ref(db, 'devices/' + userCredential.uid));
+            //push(child(ref(db), 'devices/'+userCredential.uid));
+            set(ref(db, 'users/' + uid), {
+                profile:{
+                    fullName: fullName,
+                    email: email,
+                }
+            }).then(()=> navigation.navigate('Leds'))
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-                // ..
+                console.error(errorCode + " " + errorMessage)
             });
         
 

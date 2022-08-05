@@ -2,6 +2,7 @@ import React,  { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Button, SafeAreaView, TextInput, Switch } from "react-native";
 import db from '../firebase/config';
 import {ref, set, push, child} from "firebase/database";
+import { getAuth } from "firebase/auth";
 
 export default function CreateScreen({ route, navigation }) {
 
@@ -31,15 +32,17 @@ export default function CreateScreen({ route, navigation }) {
       />
 
       <Button onPress={() =>{
-        const newPostKey = push(child(ref(db), 'devices')).key;
+          const auth = getAuth();
+          const user = auth.currentUser.uid;
+        const newPostKey = push(child(ref(db), 'users/' + user + '/devices')).key;
 
 
-          set(ref(db, 'devices/' + newPostKey), {
+          set(ref(db, 'users/' + user + '/devices/' + newPostKey), {
                           area: areaText,
                           status: statusText,
                           pin : pinText
                         });
-           setAreaText('')
+          setAreaText('')
           setPinText('')
           setStatusText(false)
           navigation.navigate('Home');

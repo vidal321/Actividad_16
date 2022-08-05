@@ -2,23 +2,26 @@ import React from 'react'
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import db from './../../src/firebase/config';
 import {ref, set} from "firebase/database";
+import { getAuth } from "firebase/auth";
 
 const Led = (props) => {
   return (
      <View style={styles.listItem}>
          <TouchableOpacity   onPress={ () => {
-                      set(ref(db, 'devices/' + props.item.id), {
+                      const auth = getAuth();
+                      const user = auth.currentUser.uid;
+                      set(ref(db, 'users/' + user + '/devices/' + props.item.id), {
                           area: props.item.area,
                           status: !props.item.status,
                           pin : props.item.pin
                         });
                     }}>
-      <Image source={ 
+                  <Image source={ 
                         props.item.status ?  require('../../img/imagen_on.png') 
                                   : require('../../img/imagen_off.png') } 
                         style={{width:60, height:60,borderRadius:30}}
                     />
-    </TouchableOpacity>
+        </TouchableOpacity>
       <View style={{alignItems:"center",flex:1}}>
         <Text style={{fontWeight:"bold"}}>{props.item.area}</Text>
         <Text>Pin: {props.item.pin}</Text>

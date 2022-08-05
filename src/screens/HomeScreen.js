@@ -3,13 +3,16 @@ import {FlatList, SafeAreaView, Button} from 'react-native';
 import db from './../../src/firebase/config';
 import {ref, onValue} from "firebase/database";
 import Led from '../components/Led';
+import { getAuth } from "firebase/auth";
 
 export default function HomeScreen({ navigation }) {
 
   const [listDevices, setlistDevices] = useState([]);
 
   const  readData = () => {
-    const dbRef = ref(db, 'devices');
+    const auth = getAuth();
+    const user = auth.currentUser.uid;
+    const dbRef = ref(db, 'users/' + user + '/devices/');
     onValue(dbRef, (snapshot) => {
         let records = [];
           snapshot.forEach(childSnapshot => {
@@ -25,11 +28,6 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView>
-      
-      <Button onPress={() =>{
-        navigation.navigate('Create');
-      }} title="Crear" />
-
       <FlatList
           data={listDevices}
           keyExtractor={(item, index) => String(index)}
@@ -37,11 +35,6 @@ export default function HomeScreen({ navigation }) {
             <Led item={item} navigation={navigation}/>
           )}
       />
-
-        <Button onPress={() =>{
-        navigation.navigate('Register');
-      }} title="Registrarse" />
-      
     </SafeAreaView>
   );
 }
